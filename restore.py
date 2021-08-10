@@ -47,6 +47,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
             if any([e in f for e in EXCLUDE_FILE]):
                 continue
 
+            ####################### Handle users #######################
+
             file_src = os.path.join(root, f)
             if len(selected_users) > 1 and (
                 file_src not in selected_users
@@ -58,6 +60,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
 
             file_dst = "/" + os.path.relpath(file_src, backup)
             file_dst = change_user_path(file_dst, os.environ["USER"])
+
+            #############################################################
 
             print(f"file_src: {file_src}")
             print(f"file_dst: {file_dst}")

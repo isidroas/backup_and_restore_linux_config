@@ -31,9 +31,6 @@ def main(backup, selected_users, dry_run, ask_before):
 
     # TODO: Check if backup contains "home" folder
 
-    #    if overwritten_backup:
-    #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
-
     for root, dirs, files in os.walk(backup):
         if any([e in root for e in EXCLUDE_FOLDER]):
             continue
@@ -41,7 +38,10 @@ def main(backup, selected_users, dry_run, ask_before):
             if any([e in f for e in EXCLUDE_FILE]):
                 continue
 
-            file_dst= os.path.join(root, f)
+            file_dst = os.path.join(root, f)
+
+            ####################### Handle users #######################
+
             if len(selected_users) > 1 and (
                 file_dst not in selected_users
                 or file_exists_in_other_higher_priority_user(
@@ -52,6 +52,9 @@ def main(backup, selected_users, dry_run, ask_before):
 
             file_src = "/" + os.path.relpath(file_dst, backup)
             file_src = change_user_path(file_src, os.environ["USER"])
+
+            #############################################################
+
 
             print(f"file_src: {file_src}")
             print(f"file_dst: {file_dst}")
