@@ -6,9 +6,15 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
 
 
 @click.command(
-    help="Copies files present BACKUP from the root to BACKUP. BACKUP should be like a root directory, in other words, it should contain a home folder"
+    help="Copies contents from BACKUP to the root using the actual user. BACKUP should be like a root directory, in other words, it should contain a home folder"
 )
 @click.argument("backup", type=click.Path(exists=True))
+@click.option(
+    "--overwritten-backup",
+    type=click.Path(exists=True),
+    default="./",
+    help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
+)
 @click.option(
     "--selected-users",
     multiple=True,
@@ -21,7 +27,7 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
     is_flag=True,
     help="if the file already exists, show the diff and ask whether overwrite.",
 )
-def main(backup, selected_users, dry_run, ask_before):
+def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
     # def main(**kwargs):
     #    print(kwargs)
     #    quit()
@@ -41,32 +47,33 @@ def main(backup, selected_users, dry_run, ask_before):
             if any([e in f for e in EXCLUDE_FILE]):
                 continue
 
-            file_dst= os.path.join(root, f)
+            file_src = os.path.join(root, f)
             if len(selected_users) > 1 and (
-                file_dst not in selected_users
+                file_src not in selected_users
                 or file_exists_in_other_higher_priority_user(
                     "/" + rel_path, selected_users
                 )
             ):
                 continue
 
-            file_src = "/" + os.path.relpath(file_dst, backup)
-            file_src = change_user_path(file_src, os.environ["USER"])
+            file_dst = "/" + os.path.relpath(file_src, backup)
+            file_dst = change_user_path(file_dst, os.environ["USER"])
 
             print(f"file_src: {file_src}")
             print(f"file_dst: {file_dst}")
 
-            exists = os.path.isfile(file_src)
+            exists = os.path.isfile(file_dst)
 
             if exists:
                 if not print_diff(file_src, file_dst):
                     print("Skipping copy, both files are equal")
                     continue
-                if not dry_run:
-                    shutil.copy(file_src, file_dst)
+                # TODO: backup
             else:
-                print("Backup file does not exists in system")
-                # TODO: remove file in backup?
+                if not dry_run:
+                    os.makedirs(os.path.dirname(file_dst), exist_ok=True)
+            if not dry_run:
+                shutil.copy(file_src, file_dst)
 
             print("")
 
