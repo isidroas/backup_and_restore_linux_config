@@ -77,7 +77,7 @@ def file_exists_in_other_higher_priority_user(path, users_list):
     higher_level_users = users_list[index_actual_user + 1 :]
     for user in higher_level_users:
         new_path = change_user_path(path, user)
-        if os.file_exists(new_path):
+        if os.path.isfile(new_path):
             return True
 
     return False
