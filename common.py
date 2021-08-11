@@ -1,6 +1,7 @@
 import os
 import shutil
 from typing import Tuple
+from pathlib import Path
 
 import difflib
 from datetime import datetime
@@ -21,20 +22,24 @@ def get_user_path(path: str) -> str:
     return list_[2]
 
 
-def change_user_path(path: str, new_user: str) -> str:
+def change_user_path(path: Path, new_user: str) -> Path:
     """ Change user name of the path. The given path shoud be absolute and
     therefore the user name is in the second position (after 'home' folder)
 
-    >>> change_user_of_path('/home/foo/.local/bin/myprogram.sh', 'bar')
-    '/home/bar/.local/bin/myprogram.sh'
+    >>> change_user_of_path(Path('/home/foo/.local/bin/myprogram.sh'), 'bar')
+    Path('/home/bar/.local/bin/myprogram.sh')
     """
-    list_ = path.split("/")
+    if not path.is_absolute():
+        raise ValueError("Path is not absolute")
 
-    if list_[1] != "home":
-        raise ValueError(f"path: {path} is not an absolute path")
+    if len(path.parts)>2 and path.parts[1] != "home":
+        return path
 
-    list_[2] = new_user
-    path = "/".join(list_)
+    parts = list(path.parts)
+    #import pdb; pdb.set_trace()
+    parts[2] = new_user
+    path = Path(*parts)
+
     return path
 
 
@@ -43,7 +48,7 @@ def file_mtime(path):
     return t.strftime("%Y-%m-%d %M:%M:%S")
 
 
-def print_diff(fromfile: str, tofile: str):
+def print_diff(fromfile: Path, tofile: Path):
     with open(fromfile) as ff:
         fromlines = ff.readlines()
     with open(tofile) as tf:
@@ -51,7 +56,7 @@ def print_diff(fromfile: str, tofile: str):
     fromdate = file_mtime(fromfile)
     todate = file_mtime(tofile)
     diff = difflib.unified_diff(
-        fromlines, tolines, fromfile, tofile, fromdate, todate, n=3
+        fromlines, tolines, str(fromfile), str(tofile), fromdate, todate, n=3
     )
     has_diff = False
     for i in diff:

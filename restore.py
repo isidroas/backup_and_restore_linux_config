@@ -2,6 +2,8 @@ import os
 import click
 import shutil
 
+from pathlib import Path
+
 from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
 
 
@@ -40,25 +42,29 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
     #    if overwritten_backup:
     #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 
-    for root, dirs, files in os.walk(backup):
-        if any([e in root for e in EXCLUDE_FOLDER]):
+    # TODO: use Path.glob('*')
+#    for root, dirs, files in os.walk(backup):
+    for directory in Path(backup).glob('**'):
+        if any([e in directory.parts for e in EXCLUDE_FOLDER]):
             continue
-        for f in files:
-            if any([e in f for e in EXCLUDE_FILE]):
+#        for f in files:
+        for file_src in directory.glob('*'):
+            if any([e in file_src.parts for e in EXCLUDE_FILE]):
                 continue
 
+            assert file_src.is_file()
             ####################### Handle users #######################
 
-            file_src = os.path.join(root, f)
-            if len(selected_users) > 1 and (
-                file_src not in selected_users
-                or file_exists_in_other_higher_priority_user(
-                    "/" + rel_path, selected_users
-                )
-            ):
-                continue
+            #file_src = Path(root) / f
+#            if len(selected_users) > 1 and (
+#                file_src not in selected_users
+#                or file_exists_in_other_higher_priority_user(
+#                    "/" + rel_path, selected_users
+#                )
+#            ):
+#                continue
 
-            file_dst = "/" + os.path.relpath(file_src, backup)
+            file_dst = Path("/") / file_src.relative_to(backup)
             file_dst = change_user_path(file_dst, os.environ["USER"])
 
             #############################################################
@@ -66,18 +72,18 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
             print(f"file_src: {file_src}")
             print(f"file_dst: {file_dst}")
 
-            exists = os.path.isfile(file_dst)
-
-            if exists:
+            if file_dst.is_file():
                 if not print_diff(file_src, file_dst):
                     print("Skipping copy, both files are equal")
                     continue
                 # TODO: backup
             else:
                 if not dry_run:
-                    os.makedirs(os.path.dirname(file_dst), exist_ok=True)
+                    pass
+                    #os.makedirs(os.path.dirname(file_dst), exist_ok=True)
             if not dry_run:
-                shutil.copy(file_src, file_dst)
+                pass
+                #shutil.copy(file_src, file_dst)
 
             print("")
 

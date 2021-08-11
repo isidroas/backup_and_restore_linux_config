@@ -3,6 +3,7 @@
 - Undertand some suffix like '.append_only' to not write the entire by the begining
 - Hacer carpeta de test (utilizar docker? realmente no hace falta)
 - https://realpython.com/python-pathlib/
+    - Modify main iterator. Substitute os.walk
 - Usuarios
     - add other users in /home that overwrites configurations in \_any_user
     - Si no se especifica algun usuario, cogerlo de $USER 
