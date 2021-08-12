@@ -4,7 +4,7 @@ import shutil
 
 from pathlib import Path
 
-from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
+from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, skip_this_user
 
 
 @click.command(
@@ -43,6 +43,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
     #    if overwritten_backup:
     #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 
+    assert len(selected_users)>0
+
 
     for directory in Path(backup).glob('**'):
         assert not directory.is_file()
@@ -59,14 +61,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
             assert file_src.is_file()
             ####################### Handle users #######################
 
-            #file_src = Path(root) / f
-#            if len(selected_users) > 1 and (
-#                file_src not in selected_users
-#                or file_exists_in_other_higher_priority_user(
-#                    "/" + rel_path, selected_users
-#                )
-#            ):
-#                continue
+            if skip_this_user(file_src, backup, selected_users):
+                continue
 
             file_dst = Path("/") / file_src.relative_to(backup)
             file_dst = change_user_path(file_dst, os.environ["USER"])
