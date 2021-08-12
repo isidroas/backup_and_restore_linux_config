@@ -22,7 +22,7 @@ from common import (
 @click.option(
     "--overwritten-backup",
     type=click.Path(exists=True),
-    default="./",
+    #default="./",
     help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
 )
 # TODO: in backup this make more sense to be mandatory
@@ -82,7 +82,7 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
                     overwritten_path = overwritten_backup / file_dst.relative_to('/')
                     print(f"overwritten_path: {overwritten_path}")
                     os.makedirs(overwritten_path.parent, exist_ok=True)
-                    #shutil.copy(file_dst, overwritten_path)
+                    shutil.copy(file_dst, overwritten_path)
             else:
                 if not dry_run:
                     pass
