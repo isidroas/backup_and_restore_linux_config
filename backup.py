@@ -62,7 +62,7 @@ def main(backup, selected_users, dry_run, ask_before):
             #############################################################
 
             if file_src.is_file():
-                if not print_diff(file_src, file_dst):
+                if not print_diff(file_dst, file_src):
                     # print("Skipping copy, both files are equal")
                     continue
                 print(f"file_src: {file_src}")
@@ -72,7 +72,7 @@ def main(backup, selected_users, dry_run, ask_before):
                         continue
                     shutil.copy(file_src, file_dst)
             else:
-                print("Backup file does not exists in system")
+                print(f"Backup file '{file_src}' does not exists in system")
                 # TODO: remove file in backup?
 
             print("")
