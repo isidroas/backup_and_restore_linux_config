@@ -2,6 +2,7 @@ import os
 import click
 import shutil
 
+from datetime import datetime
 from pathlib import Path
 
 from common import (
@@ -41,8 +42,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
 
     # TODO: Check if backup contains "home" folder
 
-    #    if overwritten_backup:
-    #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+    if overwritten_backup:
+        overwritten_backup = Path(overwritten_backup) / datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     assert len(selected_users) > 0
 
@@ -77,6 +78,11 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
                     print("Skipping copy, both files are equal")
                     continue
                 # TODO: backup
+                if overwritten_backup:
+                    overwritten_path = overwritten_backup / file_dst.relative_to('/')
+                    print(f"overwritten_path: {overwritten_path}")
+                    os.makedirs(overwritten_path.parent, exist_ok=True)
+                    #shutil.copy(file_dst, overwritten_path)
             else:
                 if not dry_run:
                     pass
