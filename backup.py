@@ -1,6 +1,7 @@
 import os
 import click
 import shutil
+from pathlib import Path
 
 from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
 
@@ -31,26 +32,31 @@ def main(backup, selected_users, dry_run, ask_before):
 
     # TODO: Check if backup contains "home" folder
 
-    for root, dirs, files in os.walk(backup):
-        if any([e in root for e in EXCLUDE_FOLDER]):
+    for directory in Path(backup).glob('**'):
+        assert not directory.is_file()
+
+        if any([e in directory.parts for e in EXCLUDE_FOLDER]):
             continue
-        for f in files:
-            if any([e in f for e in EXCLUDE_FILE]):
+        for file_dst in directory.iterdir():
+            if file_dst.is_dir():
                 continue
 
-            file_dst = os.path.join(root, f)
+            if any([e in file_dst.parts for e in EXCLUDE_FILE]):
+                continue
+
+            assert file_dst.is_file()
 
             ####################### Handle users #######################
 
-            if len(selected_users) > 1 and (
-                file_dst not in selected_users
-                or file_exists_in_other_higher_priority_user(
-                    "/" + rel_path, selected_users
-                )
-            ):
-                continue
+            #if len(selected_users) > 1 and (
+            #    file_dst not in selected_users
+            #    or file_exists_in_other_higher_priority_user(
+            #        "/" + rel_path, selected_users
+            #    )
+            #):
+            #    continue
 
-            file_src = "/" + os.path.relpath(file_dst, backup)
+            file_src = Path("/") / file_dst.relative_to(backup)
             file_src = change_user_path(file_src, os.environ["USER"])
 
             #############################################################
@@ -59,14 +65,14 @@ def main(backup, selected_users, dry_run, ask_before):
             print(f"file_src: {file_src}")
             print(f"file_dst: {file_dst}")
 
-            exists = os.path.isfile(file_src)
 
-            if exists:
+            if file_src.is_file():
                 if not print_diff(file_src, file_dst):
                     print("Skipping copy, both files are equal")
                     continue
                 if not dry_run:
-                    shutil.copy(file_src, file_dst)
+                    pass
+                    #shutil.copy(file_src, file_dst)
             else:
                 print("Backup file does not exists in system")
                 # TODO: remove file in backup?

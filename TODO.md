@@ -4,6 +4,7 @@
 - Hacer carpeta de test (utilizar docker? realmente no hace falta)
 - https://realpython.com/python-pathlib/
     - Modify main iterator. Substitute os.walk
+- Hacer generador común para restore y backup, en el que el skip de los ficheros sea transparente
 - Usuarios
     - add other users in /home that overwrites configurations in \_any_user
     - Si no se especifica algun usuario, cogerlo de $USER 
