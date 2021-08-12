@@ -1,4 +1,3 @@
-- submodule with pass
 - add timestamp to backup folder, to allow multiple at same time
 - Undertand some suffix like '.append_only' to not write the entire by the begining
 - Hacer carpeta de test (utilizar docker? realmente no hace falta)
