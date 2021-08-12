@@ -4,18 +4,20 @@ import shutil
 
 from pathlib import Path
 
-from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, skip_this_user
+from common import (
+    EXCLUDE_FOLDER,
+    EXCLUDE_FILE,
+    print_diff,
+    change_user_path,
+    skip_this_user,
+)
 
 
 @click.command(
     help="Copies contents from BACKUP to the root using the actual user. BACKUP should be like a root directory, in other words, it should contain a home folder. SELECTED_USERS should be a list of users present in BACKUP/home and specify which users to copy. When the same file appear in different users, the first has priority."
 )
 @click.argument("backup", type=click.Path(exists=True))
-@click.argument(
-    "selected-users",
-    nargs=-1,
-    type=str,
-)
+@click.argument("selected-users", nargs=-1, type=str)
 @click.option(
     "--overwritten-backup",
     type=click.Path(exists=True),
@@ -42,10 +44,9 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
     #    if overwritten_backup:
     #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 
-    assert len(selected_users)>0
+    assert len(selected_users) > 0
 
-
-    for directory in Path(backup).glob('**'):
+    for directory in Path(backup).glob("**"):
         assert not directory.is_file()
 
         if any([e in directory.parts for e in EXCLUDE_FOLDER]):
@@ -79,10 +80,10 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
             else:
                 if not dry_run:
                     pass
-                    #os.makedirs(os.path.dirname(file_dst), exist_ok=True)
+                    # os.makedirs(os.path.dirname(file_dst), exist_ok=True)
             if not dry_run:
                 pass
-                #shutil.copy(file_src, file_dst)
+                # shutil.copy(file_src, file_dst)
 
             print("")
 

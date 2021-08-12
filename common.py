@@ -12,46 +12,49 @@ from datetime import datetime
 EXCLUDE_FOLDER = [".git", ".mypy_cache"]
 EXCLUDE_FILE = ["TODO.md", ".swp"]
 
+
 def skip_this_user(file: Path, backup: Path, selected_users: List[str]) -> bool:
-    if get_user(file, root_path = backup) not in selected_users:
-        print('user skipped 1')
+    if get_user(file, root_path=backup) not in selected_users:
+        print("user skipped 1")
         return True
 
     if file_exists_in_other_higher_priority_user(file, backup, selected_users):
-        print('user skipped 2')
+        print("user skipped 2")
         return True
 
     return False
 
-def get_user(file: Path, root_path: Path = Path('/')) -> str:
-    
+
+def get_user(file: Path, root_path: Path = Path("/")) -> str:
+
     rel = file.relative_to(root_path)
 
     parts = list(rel.parts)
 
-    assert parts[0]=='home'
+    assert parts[0] == "home"
 
     return parts[1]
+
 
 # TODO: handle not user paths
 #    if len(rel.parts)>2 and rel.parts[1] != "home":
 #        return path
 
-def change_user_path(path: Path, new_user: str, root_path: Path = Path('/')) -> Path:
+
+def change_user_path(path: Path, new_user: str, root_path: Path = Path("/")) -> Path:
     """ Change user name of the path. The given path shoud be absolute and
     therefore the user name is in the second position (after 'home' folder)
 
     >>> change_user_path(Path('/home/foo/.local/bin/myprogram.sh'), 'bar')
     Path('/home/bar/.local/bin/myprogram.sh')
     """
-#    if not path.is_absolute():
-#        raise ValueError("Path is not absolute")
+    #    if not path.is_absolute():
+    #        raise ValueError("Path is not absolute")
 
     rel = path.relative_to(root_path)
 
-
     parts = list(rel.parts)
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     parts[1] = new_user
     path = root_path / Path(*parts)
 
@@ -90,8 +93,10 @@ def print_diff(fromfile: Path, tofile: Path):
     return has_diff
 
 
-def file_exists_in_other_higher_priority_user(file: Path, backup: Path, users_list: List[str])-> bool:
-#    user = get_user_path(file, backup)
+def file_exists_in_other_higher_priority_user(
+    file: Path, backup: Path, users_list: List[str]
+) -> bool:
+    #    user = get_user_path(file, backup)
 
     index_actual_user = users_list.index(get_user(file, backup))
 
