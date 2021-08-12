@@ -42,13 +42,16 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
     #    if overwritten_backup:
     #        back_up_timestamp = os.path.join(back_up, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 
-    # TODO: use Path.glob('*')
-#    for root, dirs, files in os.walk(backup):
+
     for directory in Path(backup).glob('**'):
+        assert not directory.is_file()
+
         if any([e in directory.parts for e in EXCLUDE_FOLDER]):
             continue
-#        for f in files:
-        for file_src in directory.glob('*'):
+        for file_src in directory.iterdir():
+            if file_src.is_dir():
+                continue
+
             if any([e in file_src.parts for e in EXCLUDE_FILE]):
                 continue
 
