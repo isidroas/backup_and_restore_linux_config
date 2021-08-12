@@ -28,7 +28,7 @@ def main(backup, selected_users, dry_run, ask_before):
     #    quit()
 
     # Force dryrun when debugging
-    dry_run = True
+#    dry_run = True
 
     assert len(selected_users)>0
 
@@ -60,17 +60,18 @@ def main(backup, selected_users, dry_run, ask_before):
             #############################################################
 
 
-            print(f"file_src: {file_src}")
-            print(f"file_dst: {file_dst}")
 
 
             if file_src.is_file():
                 if not print_diff(file_src, file_dst):
-                    print("Skipping copy, both files are equal")
+                    #print("Skipping copy, both files are equal")
                     continue
+                print(f"file_src: {file_src}")
+                print(f"file_dst: {file_dst}")
                 if not dry_run:
-                    pass
-                    #shutil.copy(file_src, file_dst)
+                    if ask_before and input('do you want this file (y/n): ')=='n':
+                        continue
+                    shutil.copy(file_src, file_dst)
             else:
                 print("Backup file does not exists in system")
                 # TODO: remove file in backup?
