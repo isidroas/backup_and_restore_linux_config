@@ -17,6 +17,7 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
     default="./",
     help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
 )
+# TODO: in backup this make more sense to be mandatory
 @click.option(
     "--selected-users",
     multiple=True,

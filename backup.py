@@ -3,7 +3,7 @@ import click
 import shutil
 from pathlib import Path
 
-from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path
+from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, skip_this_user
 
 
 @click.command(
@@ -30,6 +30,8 @@ def main(backup, selected_users, dry_run, ask_before):
     # Force dryrun when debugging
     dry_run = True
 
+    assert len(selected_users)>0
+
     # TODO: Check if backup contains "home" folder
 
     for directory in Path(backup).glob('**'):
@@ -48,14 +50,10 @@ def main(backup, selected_users, dry_run, ask_before):
 
             ####################### Handle users #######################
 
-            #if len(selected_users) > 1 and (
-            #    file_dst not in selected_users
-            #    or file_exists_in_other_higher_priority_user(
-            #        "/" + rel_path, selected_users
-            #    )
-            #):
-            #    continue
+            if skip_this_user(file_dst, backup, selected_users):
+                continue
 
+            # add it to common yield?
             file_src = Path("/") / file_dst.relative_to(backup)
             file_src = change_user_path(file_src, os.environ["USER"])
 

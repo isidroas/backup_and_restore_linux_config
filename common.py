@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Tuple
+from typing import Tuple, List
 from pathlib import Path
 
 import difflib
@@ -12,38 +12,53 @@ from datetime import datetime
 EXCLUDE_FOLDER = [".git", ".mypy_cache"]
 EXCLUDE_FILE = ["TODO.md", ".swp"]
 
+def skip_this_user(file: Path, backup: Path, selected_users: List[str]) -> bool:
+    if get_user(file, root_path = backup) not in selected_users:
+        print('user skipped 1')
+        return True
 
-def get_user_path(path: str) -> str:
-    list_ = path.split("/")
+    if file_exists_in_other_higher_priority_user(file, backup, selected_users):
+        print('user skipped 2')
+        return True
 
-    if list_[1] != "home":
-        raise ValueError(f"path: {path} is not an absolute path")
+    return False
 
-    return list_[2]
+def get_user(file: Path, root_path: Path = Path('/')) -> str:
+    
+    rel = file.relative_to(root_path)
 
+    parts = list(rel.parts)
 
-def change_user_path(path: Path, new_user: str) -> Path:
+    assert parts[0]=='home'
+
+    return parts[1]
+
+# TODO: handle not user paths
+#    if len(rel.parts)>2 and rel.parts[1] != "home":
+#        return path
+
+def change_user_path(path: Path, new_user: str, root_path: Path = Path('/')) -> Path:
     """ Change user name of the path. The given path shoud be absolute and
     therefore the user name is in the second position (after 'home' folder)
 
-    >>> change_user_of_path(Path('/home/foo/.local/bin/myprogram.sh'), 'bar')
+    >>> change_user_path(Path('/home/foo/.local/bin/myprogram.sh'), 'bar')
     Path('/home/bar/.local/bin/myprogram.sh')
     """
-    if not path.is_absolute():
-        raise ValueError("Path is not absolute")
+#    if not path.is_absolute():
+#        raise ValueError("Path is not absolute")
 
-    if len(path.parts)>2 and path.parts[1] != "home":
-        return path
+    rel = path.relative_to(root_path)
 
-    parts = list(path.parts)
+
+    parts = list(rel.parts)
     #import pdb; pdb.set_trace()
-    parts[2] = new_user
-    path = Path(*parts)
+    parts[1] = new_user
+    path = root_path / Path(*parts)
 
     return path
 
 
-def file_mtime(path):
+def _file_mtime(path):
     t = datetime.fromtimestamp(os.stat(path).st_mtime)
     return t.strftime("%Y-%m-%d %M:%M:%S")
 
@@ -53,8 +68,8 @@ def print_diff(fromfile: Path, tofile: Path):
         fromlines = ff.readlines()
     with open(tofile) as tf:
         tolines = tf.readlines()
-    fromdate = file_mtime(fromfile)
-    todate = file_mtime(tofile)
+    fromdate = _file_mtime(fromfile)
+    todate = _file_mtime(tofile)
     diff = difflib.unified_diff(
         fromlines, tolines, str(fromfile), str(tofile), fromdate, todate, n=3
     )
@@ -75,14 +90,15 @@ def print_diff(fromfile: Path, tofile: Path):
     return has_diff
 
 
-def file_exists_in_other_higher_priority_user(path, users_list):
-    user = get_user_path(path)
+def file_exists_in_other_higher_priority_user(file: Path, backup: Path, users_list: List[str])-> bool:
+#    user = get_user_path(file, backup)
 
-    index_actual_user = users_list.index(user)
+    index_actual_user = users_list.index(get_user(file, backup))
+
     higher_level_users = users_list[index_actual_user + 1 :]
     for user in higher_level_users:
-        new_path = change_user_path(path, user)
-        if os.path.isfile(new_path):
+        new_path = change_user_path(file, user, backup)
+        if new_path.is_file():
             return True
 
     return False

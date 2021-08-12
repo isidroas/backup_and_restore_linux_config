@@ -6,6 +6,22 @@
     - Modify main iterator. Substitute os.walk
 - Hacer generador común para restore y backup, en el que el skip de los ficheros sea transparente
 - Usuarios
+    - Backup:
+        1. Isidro (Existe), any_user (Existe):
+            En este caso se copiaria el de isidro.
+        2. Isidro (no existe), any_user (Existe):
+            En este caso se copiaria el de any_user. No hay que cambiar nada en la programación
+        3. Isidro (existe), any_user (no existe):
+            En este caso se copiaria el de isidro. No hay que cambiar nada en la programación
+    - restore:
+        1. Isidro (Existe), any_user (Existe):
+            En este caso se copiaria el de isidro.
+        2. Isidro (no existe), any_user (Existe):
+            En este caso se copiaria el de any_user. No hay que cambiar nada en la programación
+        3. Isidro (existe), any_user (no existe):
+            En este caso se copiaria el de isidro. No hay que cambiar nada en la programación
+
+
     - add other users in /home that overwrites configurations in \_any_user
     - Si no se especifica algun usuario, cogerlo de $USER 
     ```bash
