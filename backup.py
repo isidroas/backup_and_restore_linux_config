@@ -8,13 +8,13 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, s
 
 @click.command(
     help="Copies files present BACKUP from the root to BACKUP. BACKUP should be like a root directory, in other words, it should contain a home folder"
+    #help="list of users to copy. All specified users should be present in the directory 'BACKUP/home'. When the same file appear in different users, the first has priority",
 )
 @click.argument("backup", type=click.Path(exists=True))
-@click.option(
-    "--selected-users",
-    multiple=True,
+@click.argument(
+    "selected-users",
+    nargs=-1,
     type=str,
-    help="list of users to copy. All specified users should be present in the directory 'BACKUP/home'. When the same file appear in different users, the first has priority",
 )
 @click.option("--dry-run", is_flag=True)
 @click.option(

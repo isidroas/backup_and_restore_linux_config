@@ -8,9 +8,14 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, s
 
 
 @click.command(
-    help="Copies contents from BACKUP to the root using the actual user. BACKUP should be like a root directory, in other words, it should contain a home folder"
+    help="Copies contents from BACKUP to the root using the actual user. BACKUP should be like a root directory, in other words, it should contain a home folder. SELECTED_USERS should be a list of users present in BACKUP/home and specify which users to copy. When the same file appear in different users, the first has priority."
 )
 @click.argument("backup", type=click.Path(exists=True))
+@click.argument(
+    "selected-users",
+    nargs=-1,
+    type=str,
+)
 @click.option(
     "--overwritten-backup",
     type=click.Path(exists=True),
@@ -18,12 +23,6 @@ from common import EXCLUDE_FOLDER, EXCLUDE_FILE, print_diff, change_user_path, s
     help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
 )
 # TODO: in backup this make more sense to be mandatory
-@click.option(
-    "--selected-users",
-    multiple=True,
-    type=str,
-    help="list of users to copy. All specified users should be present in the directory 'BACKUP/home'. When the same file appear in different users, the first has priority",
-)
 @click.option("--dry-run", is_flag=True)
 @click.option(
     "--ask-before",
