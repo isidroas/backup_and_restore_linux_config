@@ -20,7 +20,7 @@ from common import (
 @click.argument("backup", type=click.Path(exists=True))
 @click.argument("selected-users", nargs=-1, type=str)
 @click.option(
-    "--overwritten-backup",
+    "--overwritten-output",
     type=click.Path(exists=True),
     #default="./",
     help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
@@ -32,7 +32,7 @@ from common import (
     is_flag=True,
     help="if the file already exists, show the diff and ask whether overwrite.",
 )
-def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
+def main(backup, overwritten_output, selected_users, dry_run, ask_before):
     # def main(**kwargs):
     #    print(kwargs)
     #    quit()
@@ -42,8 +42,8 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
 
     # TODO: Check if backup contains "home" folder
 
-    if overwritten_backup:
-        overwritten_backup = Path(overwritten_backup) / datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    if overwritten_output:
+        overwritten_output = Path(overwritten_output) / datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     assert len(selected_users) > 0
 
@@ -70,25 +70,28 @@ def main(backup, overwritten_backup, selected_users, dry_run, ask_before):
 
             #############################################################
 
-            print(f"file_src: {file_src}")
-            print(f"file_dst: {file_dst}")
 
             if file_dst.is_file():
                 if not print_diff(file_src, file_dst):
-                    print("Skipping copy, both files are equal")
+                    #print("Skipping copy, both files are equal")
                     continue
-                # TODO: backup
-                if overwritten_backup:
-                    overwritten_path = overwritten_backup / file_dst.relative_to('/')
-                    print(f"overwritten_path: {overwritten_path}")
+                if overwritten_output:
+                    overwritten_path = overwritten_output / file_dst.relative_to('/')
                     os.makedirs(overwritten_path.parent, exist_ok=True)
                     shutil.copy(file_dst, overwritten_path)
             else:
-                if not dry_run:
-                    pass
-                    # os.makedirs(os.path.dirname(file_dst), exist_ok=True)
+                print("Copying new file")
+
+            print(f"file_src: {file_src}")
+            print(f"file_dst: {file_dst}")
+
             if not dry_run:
-                pass
+                if ask_before and input("do you want this file (y/n): ") == "n":
+                    print("")
+                    continue
+                if not file_dst.parent.is_dir():
+                    # os.makedirs(os.path.dirname(file_dst), exist_ok=True)
+                    pass
                 # shutil.copy(file_src, file_dst)
 
             print("")
