@@ -72,7 +72,7 @@ def main(backup, overwritten_output, selected_users, dry_run, ask_before):
 
 
             if file_dst.is_file():
-                if not print_diff(file_src, file_dst):
+                if not print_diff(file_dst, file_src):
                     #print("Skipping copy, both files are equal")
                     continue
                 if overwritten_output:
