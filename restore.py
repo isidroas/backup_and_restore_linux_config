@@ -38,7 +38,7 @@ def main(backup, overwritten_output, selected_users, dry_run, ask_before):
     #    quit()
 
     # Force dryrun when debugging
-    dry_run = True
+    #dry_run = True
 
     # TODO: Check if backup contains "home" folder
 
@@ -90,9 +90,9 @@ def main(backup, overwritten_output, selected_users, dry_run, ask_before):
                     print("")
                     continue
                 if not file_dst.parent.is_dir():
+                    print("calling makedirs")
                     # os.makedirs(os.path.dirname(file_dst), exist_ok=True)
-                    pass
-                # shutil.copy(file_src, file_dst)
+                shutil.copy(file_src, file_dst)
 
             print("")
 
