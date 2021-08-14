@@ -1,7 +1,11 @@
 import os
 import shutil
+import logging
+logging.basicConfig(format='[%(funcName)s] %(message)s', level=logging.DEBUG)
+
 from typing import Tuple, List
 from pathlib import Path
+
 
 import difflib
 from datetime import datetime
@@ -14,12 +18,15 @@ EXCLUDE_FILE = ["TODO.md", ".swp"]
 
 
 def skip_this_user(file: Path, backup: Path, selected_users: List[str]) -> bool:
-    if get_user(file, root_path=backup) not in selected_users:
-        print("user skipped 1")
+
+    user = get_user(file, root_path=backup)
+
+    if user not in selected_users:
+        print(f"user {user} skipped 1")
         return True
 
     if file_exists_in_other_higher_priority_user(file, backup, selected_users):
-        print("user skipped 2")
+        print(f"user {user} skipped 2")
         return True
 
     return False
@@ -98,9 +105,9 @@ def file_exists_in_other_higher_priority_user(
 ) -> bool:
     #    user = get_user_path(file, backup)
 
-    index_actual_user = users_list.index(get_user(file, backup))
+    index_actual_user = users_list.index(get_user(file, root_path=backup))
 
-    higher_level_users = users_list[index_actual_user + 1 :]
+    higher_level_users = users_list[0 :index_actual_user]
     for user in higher_level_users:
         new_path = change_user_path(file, user, backup)
         if new_path.is_file():
