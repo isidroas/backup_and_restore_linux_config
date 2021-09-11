@@ -1,6 +1,6 @@
 - Undertand some suffix like '.append_only' to not write the entire by the begining
 - Hacer carpeta de test (utilizar docker? realmente no hace falta)
-- Hacer generador común para restore y backup, en el que el skip de los ficheros sea transparente
+- Programación funcional. Hacer generador común para restore y backup, en el que el skip de los ficheros sea transparente
 - Check that users exist
 - Users overriding
     - At least one user should be mandatory in arguments
