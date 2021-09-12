@@ -7,3 +7,6 @@
 - Check that users exist
 - Users overriding
     - At least one user should be mandatory in arguments
+- Remove the option of allow non user configs (outside of /home/<user<) ?
+  - This could simplify things
+  - Also the argument could be the path, instead of a name that has not autocomplete
