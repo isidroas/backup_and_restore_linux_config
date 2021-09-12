@@ -1,0 +1,4 @@
+[console_scripts]
+backup_linux_config = backup_and_restore_linux_config.backup:main
+restore_linux_config = backup_and_restore_linux_config.restore:main
+

@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: backup-and-restore-linux-config
+Version: 0.0.3
+Summary: UNKNOWN
+Home-page: UNKNOWN
+License: UNKNOWN
+Platform: UNKNOWN
+Requires-Dist: click
+Requires-Dist: colorama ; python_version > "2"
+
+UNKNOWN
+

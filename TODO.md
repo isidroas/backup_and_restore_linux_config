@@ -1,6 +1,9 @@
-- Undertand some suffix like '.append_only' to not write the entire by the begining
-- Hacer carpeta de test (utilizar docker? realmente no hace falta)
-- Programación funcional. Hacer generador común para restore y backup, en el que el skip de los ficheros sea transparente
+- Undertand some suffixes like '.append_only' to not write the entire file by the begining
+- Make tests for CI:
+  - Docker?
+- Functional programming
+  - Make a common generator for restore.py and backup.py.
+  - It could handle the skipping of some files
 - Check that users exist
 - Users overriding
     - At least one user should be mandatory in arguments
