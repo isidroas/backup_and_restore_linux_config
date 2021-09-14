@@ -1,19 +1,19 @@
+import difflib
+import filecmp
+import logging
 import os
 import shutil
-import logging
+from datetime import datetime
+from pathlib import Path
+from typing import List, Tuple
+
+import click
+from colorama import Fore, Style
 
 logging.basicConfig(format="[%(funcName)s] %(message)s", level=logging.DEBUG)
 
-from typing import Tuple, List
-from pathlib import Path
 
 
-import difflib
-from datetime import datetime
-from colorama import Fore, Style
-import click
-import filecmp
-from datetime import datetime
 
 EXCLUDE_FOLDER = [".git", ".mypy_cache"]
 EXCLUDE_FILE = ["TODO.md", ".swp"]

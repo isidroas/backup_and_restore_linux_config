@@ -1,15 +1,13 @@
 import os
-import click
 import shutil
 from pathlib import Path
 
-from backup_and_restore_linux_config.common import (
-    EXCLUDE_FOLDER,
-    EXCLUDE_FILE,
-    print_diff,
-    change_user_path,
-    skip_this_user,
-)
+import click
+
+from backup_and_restore_linux_config.common import (EXCLUDE_FILE,
+                                                    EXCLUDE_FOLDER,
+                                                    change_user_path,
+                                                    print_diff, skip_this_user)
 
 
 @click.command(

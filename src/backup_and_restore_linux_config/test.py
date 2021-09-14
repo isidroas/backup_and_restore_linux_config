@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from common import change_user_path, get_user
 
 res = get_user(Path("/home/foo/bar"))
