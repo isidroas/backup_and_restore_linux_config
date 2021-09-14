@@ -1,7 +1,8 @@
 import os
 import shutil
 import logging
-logging.basicConfig(format='[%(funcName)s] %(message)s', level=logging.DEBUG)
+
+logging.basicConfig(format="[%(funcName)s] %(message)s", level=logging.DEBUG)
 
 from typing import Tuple, List
 from pathlib import Path
@@ -11,6 +12,7 @@ import difflib
 from datetime import datetime
 from colorama import Fore, Style
 import click
+import filecmp
 from datetime import datetime
 
 EXCLUDE_FOLDER = [".git", ".mypy_cache"]
@@ -73,9 +75,15 @@ def _file_mtime(path):
     return t.strftime("%Y-%m-%d %M:%M:%S")
 
 
-def print_diff(fromfile: Path, tofile: Path):
-    with open(fromfile) as ff:
-        fromlines = ff.readlines()
+def print_diff(fromfile: Path, tofile: Path) -> bool:
+    try:
+        with open(fromfile) as ff:
+            fromlines = ff.readlines()
+    except UnicodeDecodeError:
+        equal = filecmp.cmp(fromfile, tofile)
+        if not equal:
+            print(f"binary file {fromfile} not equal to {tofile}")
+        return not equal
     with open(tofile) as tf:
         tolines = tf.readlines()
     fromdate = _file_mtime(fromfile)
@@ -107,7 +115,7 @@ def file_exists_in_other_higher_priority_user(
 
     index_actual_user = users_list.index(get_user(file, root_path=backup))
 
-    higher_level_users = users_list[0 :index_actual_user]
+    higher_level_users = users_list[0:index_actual_user]
     for user in higher_level_users:
         new_path = change_user_path(file, user, backup)
         if new_path.is_file():

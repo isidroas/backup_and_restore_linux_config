@@ -3,7 +3,7 @@ import click
 import shutil
 from pathlib import Path
 
-from .common import (
+from backup_and_restore_linux_config.common import (
     EXCLUDE_FOLDER,
     EXCLUDE_FILE,
     print_diff,
@@ -63,7 +63,7 @@ def main(backup, selected_users, dry_run, ask_before):
 
             if file_src.is_file():
                 if not print_diff(file_dst, file_src):
-                    #print("Skipping copy, both files are equal")
+                    # print("Skipping copy, both files are equal")
                     continue
                 print(f"file_src: {file_src}")
                 print(f"file_dst: {file_dst}")

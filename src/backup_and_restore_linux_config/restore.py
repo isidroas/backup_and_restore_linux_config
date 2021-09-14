@@ -5,7 +5,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from .common import (
+from backup_and_restore_linux_config.common import (
     EXCLUDE_FOLDER,
     EXCLUDE_FILE,
     print_diff,
@@ -22,7 +22,7 @@ from .common import (
 @click.option(
     "--overwritten-output",
     type=click.Path(exists=True),
-    #default="./",
+    # default="./",
     help="folder where backup will be saved. It will create a folder with a timestamp: 'backup_%Y-%m-%d_%H:%M:%S'. Only files that were overwritten will be saved. It default location is the home folder (or the current directory?). This is useful when a disaster occurs after apply the backup",
 )
 # TODO: in backup this make more sense to be mandatory
@@ -38,12 +38,14 @@ def main(backup, overwritten_output, selected_users, dry_run, ask_before):
     #    quit()
 
     # Force dryrun when debugging
-    #dry_run = True
+    # dry_run = True
 
     # TODO: Check if backup contains "home" folder
 
     if overwritten_output:
-        overwritten_output = Path(overwritten_output) / datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        overwritten_output = Path(overwritten_output) / datetime.now().strftime(
+            "%Y-%m-%d_%H:%M:%S"
+        )
 
     assert len(selected_users) > 0
 
@@ -70,13 +72,12 @@ def main(backup, overwritten_output, selected_users, dry_run, ask_before):
 
             #############################################################
 
-
             if file_dst.is_file():
                 if not print_diff(file_dst, file_src):
-                    #print("Skipping copy, both files are equal")
+                    # print("Skipping copy, both files are equal")
                     continue
                 if overwritten_output:
-                    overwritten_path = overwritten_output / file_dst.relative_to('/')
+                    overwritten_path = overwritten_output / file_dst.relative_to("/")
                     os.makedirs(overwritten_path.parent, exist_ok=True)
                     shutil.copy(file_dst, overwritten_path)
             else:
